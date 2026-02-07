@@ -12,11 +12,16 @@
         <div class="preset-header">
           <h4>{{ preset.name }}</h4>
           <div
-            class="color-preview"
+            class="status-box"
+            :class="{ selected: preset.id === selectedPresetId }"
             :style="{
-              backgroundColor: `rgb(${preset.background.r}, ${preset.background.g}, ${preset.background.b})`
+              backgroundColor: preset.id === selectedPresetId 
+                ? '#4CAF50' 
+                : `rgb(${preset.background.r}, ${preset.background.g}, ${preset.background.b})`
             }"
-          ></div>
+          >
+            <span v-if="preset.id === selectedPresetId" class="check-mark">✓</span>
+          </div>
         </div>
         <div class="preset-info">
           <div class="info-row">
@@ -115,11 +120,32 @@ h3 {
   color: #333;
 }
 
-.color-preview {
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-box {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.status-box.selected {
+  border-color: #4CAF50;
+}
+
+.check-mark {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .preset-info {

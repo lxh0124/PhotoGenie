@@ -35,6 +35,23 @@
           :processed-image="processedImageData"
           :is-processing="isProcessing"
         />
+        
+        <div class="action-section">
+          <button 
+            class="process-btn" 
+            :disabled="!currentImagePath || !selectedPreset || isProcessing"
+            @click="processImage"
+          >
+            {{ isProcessing ? '处理中...' : '开始处理' }}
+          </button>
+          <button 
+            class="save-btn" 
+            :disabled="!processedImageData || isProcessing"
+            @click="handleSave"
+          >
+            保存图片
+          </button>
+        </div>
       </div>
     </main>
 
@@ -126,19 +143,25 @@ async function handleFileSelected(filePath: string) {
   }
   
   processedImageData.value = ''
-  
-  // Auto-process if preset is selected
-  if (selectedPreset.value) {
-    processImage()
-  }
 }
 
 function handlePresetSelected(preset: Preset) {
   selectedPreset.value = preset
+  processedImageData.value = ''
+}
+
+async function handleSave() {
+  if (!processedImageData.value) return
   
-  // Auto-process if image is loaded
-  if (currentImagePath.value) {
-    processImage()
+  const result = await window.electronAPI.saveFile()
+  if (result.success && result.filePath) {
+    const base64Data = processedImageData.value.split(',')[1] || ''
+    const saveResult = await window.electronAPI.saveProcessedImage(base64Data, result.filePath)
+    if (saveResult.success) {
+      alert('保存成功！')
+    } else {
+      alert('保存失败: ' + saveResult.error)
+    }
   }
 }
 
@@ -243,5 +266,61 @@ async function processImage() {
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.action-section {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.process-btn,
+.save-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 140px;
+}
+
+.process-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.process-btn:hover:not(:disabled) {
+  background: #1976D2;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.save-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.process-btn:active:not(:disabled),
+.save-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.process-btn:disabled,
+.save-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>

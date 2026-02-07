@@ -24,9 +24,6 @@
           </div>
         </div>
       </div>
-      <div v-if="processedImage && !isProcessing" class="actions">
-        <button class="save-btn" @click="handleSave">保存图片</button>
-      </div>
     </div>
   </div>
 </template>
@@ -38,20 +35,7 @@ interface Props {
   isProcessing?: boolean
 }
 
-const props = defineProps<Props>()
-
-async function handleSave() {
-  const result = await window.electronAPI.saveFile()
-  if (result.success && result.filePath) {
-    const base64Data = props.processedImage?.split(',')[1] || ''
-    const saveResult = await window.electronAPI.saveProcessedImage(base64Data, result.filePath)
-    if (saveResult.success) {
-      alert('保存成功！')
-    } else {
-      alert('保存失败: ' + saveResult.error)
-    }
-  }
-}
+defineProps<Props>()
 </script>
 
 <style scoped>
@@ -133,30 +117,5 @@ h3 {
 .placeholder {
   color: #999;
   font-size: 14px;
-}
-
-.actions {
-  display: flex;
-  justify-content: center;
-}
-
-.save-btn {
-  padding: 12px 32px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.save-btn:hover {
-  background: #45a049;
-}
-
-.save-btn:active {
-  transform: scale(0.98);
 }
 </style>

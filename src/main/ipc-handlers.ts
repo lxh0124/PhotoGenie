@@ -87,27 +87,37 @@ export function setupIpcHandlers(store: Store): void {
         }
         
         const qwenService = await createQwenService(apiKey);
-        const segmentResult = await qwenService.segmentPerson(imageBuffer);
+        
+        // 构建背景颜色描述
+        const bgColor = options.background || { r: 255, g: 255, b: 255 };
+        let colorName = '白色';
+        if (bgColor.r < 100 && bgColor.g < 100 && bgColor.b > 200) {
+          colorName = '蓝色';
+        } else if (bgColor.r > 200 && bgColor.g < 100 && bgColor.b < 100) {
+          colorName = '红色';
+        }
+        
+        const segmentResult = await qwenService.segmentPerson(imageBuffer, {
+          targetWidth: options.width,
+          targetHeight: options.height,
+          backgroundColor: colorName,
+          instruction: `制作证件照：抠出人物，替换为${colorName}背景，调整到${options.width}x${options.height}像素`
+        });
         
         if (!segmentResult.success || !segmentResult.maskData) {
           throw new Error(segmentResult.error || 'Failed to segment person');
         }
         
-        // 替换背景
-        processedBuffer = await imageProcessor.replaceBackground(
-          imageBuffer,
-          segmentResult.maskData,
+        processedBuffer = segmentResult.maskData;
+      } else {
+        // 如果没有使用 AI 处理，手动调整尺寸
+        processedBuffer = await imageProcessor.adjustImageSize(
+          processedBuffer,
+          options.width,
+          options.height,
           options.background || { r: 255, g: 255, b: 255 }
         );
       }
-      
-      // 调整尺寸
-      processedBuffer = await imageProcessor.adjustImageSize(
-        processedBuffer,
-        options.width,
-        options.height,
-        options.background || { r: 255, g: 255, b: 255 }
-      );
       
       // 设置 DPI
       if (options.dpi) {
@@ -265,6 +275,22 @@ export function setupIpcHandlers(store: Store): void {
       };
     } catch (error) {
       console.error('Read file error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  });
+  
+  // 保存处理后的图片
+  ipcMain.handle('save-processed-image', async (_event, base64Data: string, filePath: string) => {
+    try {
+      const buffer = Buffer.from(base64Data, 'base64');
+      await writeFile(filePath, buffer);
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Save processed image error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'

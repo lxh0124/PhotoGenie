@@ -23,7 +23,7 @@ Windows 桌面应用，支持智能抠图、背景替换、尺寸调整，适用
 
 ```bash
 # 克隆项目
-git clone <repository-url>
+git clone https://github.com/lxh0124/PhotoGenie.git
 cd PhotoGenie
 
 # 安装依赖
