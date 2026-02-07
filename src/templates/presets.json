@@ -1,0 +1,132 @@
+{
+  "presets": [
+    {
+      "id": "cn-passport",
+      "name": "中国护照",
+      "width": 354,
+      "height": 472,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.15,
+        "height": 0.7
+      }
+    },
+    {
+      "id": "cn-visa",
+      "name": "中国签证",
+      "width": 354,
+      "height": 472,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.15,
+        "height": 0.7
+      }
+    },
+    {
+      "id": "cn-id-card",
+      "name": "中国身份证",
+      "width": 358,
+      "height": 441,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.2,
+        "height": 0.65
+      }
+    },
+    {
+      "id": "cn-student-card",
+      "name": "学生证",
+      "width": 260,
+      "height": 378,
+      "dpi": 300,
+      "background": {
+        "r": 0,
+        "g": 128,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.15,
+        "height": 0.7
+      }
+    },
+    {
+      "id": "us-passport",
+      "name": "美国护照",
+      "width": 600,
+      "height": 600,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.1,
+        "height": 0.8
+      }
+    },
+    {
+      "id": "jp-passport",
+      "name": "日本护照",
+      "width": 354,
+      "height": 472,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.15,
+        "height": 0.7
+      }
+    },
+    {
+      "id": "custom-1-inch",
+      "name": "一寸照片",
+      "width": 295,
+      "height": 413,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.15,
+        "height": 0.7
+      }
+    },
+    {
+      "id": "custom-2-inch",
+      "name": "二寸照片",
+      "width": 413,
+      "height": 579,
+      "dpi": 300,
+      "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "facePosition": {
+        "top": 0.15,
+        "height": 0.7
+      }
+    }
+  ]
+}
