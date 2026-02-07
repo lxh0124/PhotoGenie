@@ -69,6 +69,7 @@ export interface ElectronAPI {
   selectFile: () => Promise<FileResult>
   saveFile: (defaultPath?: string) => Promise<FileResult>
   saveProcessedImage: (base64Data: string, filePath: string) => Promise<SaveResult>
+  readFileAsBase64: (filePath: string) => Promise<{ success: boolean; data?: string; error?: string }>
   onFileOpened: (callback: (filePath: string) => void) => () => void
 }
 

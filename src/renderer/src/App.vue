@@ -117,9 +117,14 @@ async function loadSettings() {
   }
 }
 
-function handleFileSelected(filePath: string) {
+async function handleFileSelected(filePath: string) {
   currentImagePath.value = filePath
-  originalImageUrl.value = `file://${filePath}`
+  
+  const fileData = await window.electronAPI.readFileAsBase64(filePath)
+  if (fileData.success && fileData.data) {
+    originalImageUrl.value = fileData.data
+  }
+  
   processedImageData.value = ''
   
   // Auto-process if preset is selected
@@ -150,7 +155,11 @@ async function processImage() {
       width: selectedPreset.value.width,
       height: selectedPreset.value.height,
       dpi: selectedPreset.value.dpi,
-      background: selectedPreset.value.background,
+      background: {
+        r: selectedPreset.value.background.r,
+        g: selectedPreset.value.background.g,
+        b: selectedPreset.value.background.b
+      },
       removeBackground: settings.value.autoRemoveBackground,
       quality: settings.value.defaultQuality
     })

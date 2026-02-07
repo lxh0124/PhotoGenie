@@ -149,12 +149,16 @@ export function setupIpcHandlers(store: Store): void {
   // 获取设置
   ipcMain.handle('get-settings', async () => {
     try {
+      const qwenApiKey = store.get('qwenApiKey', '') as string;
+      const defaultQuality = store.get('defaultQuality', 95) as number;
+      const autoRemoveBackground = store.get('autoRemoveBackground', false) as boolean;
+      
       return {
         success: true,
         settings: {
-          qwenApiKey: store.get('qwenApiKey', ''),
-          defaultQuality: store.get('defaultQuality', 95),
-          autoRemoveBackground: store.get('autoRemoveBackground', false)
+          qwenApiKey,
+          defaultQuality,
+          autoRemoveBackground
         }
       };
     } catch (error) {
@@ -247,15 +251,20 @@ export function setupIpcHandlers(store: Store): void {
     }
   });
   
-  // 保存处理后的图片
-  ipcMain.handle('save-processed-image', async (_event, base64Data: string, filePath: string) => {
+  // 读取本地文件为 base64
+  ipcMain.handle('read-file-as-base64', async (_event, filePath: string) => {
     try {
-      const buffer = Buffer.from(base64Data, 'base64');
-      await writeFile(filePath, buffer);
+      const buffer = await readFile(filePath);
+      const base64 = buffer.toString('base64');
+      const ext = filePath.split('.').pop()?.toLowerCase();
+      const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
       
-      return { success: true };
+      return {
+        success: true,
+        data: `data:${mimeType};base64,${base64}`
+      };
     } catch (error) {
-      console.error('Save processed image error:', error);
+      console.error('Read file error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'

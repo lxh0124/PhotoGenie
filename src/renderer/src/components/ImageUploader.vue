@@ -39,28 +39,37 @@ const isDragging = ref(false)
 const currentImage = ref<string>('')
 
 // Watch for external image path changes
-watch(() => props.imagePath, (newPath) => {
+watch(() => props.imagePath, async (newPath) => {
   if (newPath) {
-    currentImage.value = `file://${newPath}`
+    const result = await window.electronAPI.readFileAsBase64(newPath)
+    if (result.success && result.data) {
+      currentImage.value = result.data
+    }
   }
 }, { immediate: true })
 
 async function selectFile() {
   const result = await window.electronAPI.selectFile()
   if (result.success && result.filePath) {
-    currentImage.value = `file://${result.filePath}`
-    emit('fileSelected', result.filePath)
+    const fileData = await window.electronAPI.readFileAsBase64(result.filePath)
+    if (fileData.success && fileData.data) {
+      currentImage.value = fileData.data
+      emit('fileSelected', result.filePath)
+    }
   }
 }
 
-function handleDrop(e: DragEvent) {
+async function handleDrop(e: DragEvent) {
   isDragging.value = false
   const files = e.dataTransfer?.files
   if (files && files.length > 0) {
     const file = files[0]
     if (/\.(jpg|jpeg|png|bmp|webp)$/i.test(file.name)) {
-      currentImage.value = `file://${file.path}`
-      emit('fileSelected', file.path)
+      const fileData = await window.electronAPI.readFileAsBase64(file.path)
+      if (fileData.success && fileData.data) {
+        currentImage.value = fileData.data
+        emit('fileSelected', file.path)
+      }
     }
   }
 }

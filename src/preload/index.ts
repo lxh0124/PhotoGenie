@@ -62,6 +62,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveProcessedImage: (base64Data: string, filePath: string) => 
     ipcRenderer.invoke('save-processed-image', base64Data, filePath),
   
+  // 读取本地文件为 base64
+  readFileAsBase64: (filePath: string) =>
+    ipcRenderer.invoke('read-file-as-base64', filePath),
+  
   // 监听文件打开事件（右键菜单或第二实例）
   onFileOpened: (callback: (filePath: string) => void) => {
     const subscription = (_event: any, filePath: string) => callback(filePath)

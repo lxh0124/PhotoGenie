@@ -23,7 +23,7 @@ export interface FaceDetectionResult {
   error?: string;
 }
 
-const DEFAULT_ENDPOINT = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image-segmentation/generation';
+const DEFAULT_ENDPOINT = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation';
 
 export class QwenAPIService {
   private apiKey: string;
@@ -41,32 +41,33 @@ export class QwenAPIService {
       const response = await axios.post(
         this.endpoint,
         {
-          model: 'person-segmentation-v1',
+          model: 'qwen-image-edit-max',
           input: {
-            image_url: `data:image/jpeg;base64,${base64Image}`
+            image: `data:image/jpeg;base64,${base64Image}`,
+            prompt: 'Remove background, keep only the person'
           },
           parameters: {
-            return_mask: true
+            task: 'background-removal'
           }
         },
         {
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-            'X-DashScope-Async': 'enable'
+            'Content-Type': 'application/json'
           },
           timeout: 30000
         }
       );
 
-      if (response.data.output?.mask_url) {
-        const maskResponse = await axios.get(response.data.output.mask_url, {
+      if (response.data.output?.results?.[0]?.url) {
+        const imageUrl = response.data.output.results[0].url;
+        const imageResponse = await axios.get(imageUrl, {
           responseType: 'arraybuffer'
         });
         
         return {
           success: true,
-          maskData: Buffer.from(maskResponse.data)
+          maskData: Buffer.from(imageResponse.data)
         };
       }
 

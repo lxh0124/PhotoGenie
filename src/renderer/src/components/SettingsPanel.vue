@@ -87,7 +87,11 @@ function handleClose() {
 }
 
 async function handleSave() {
-  const result = await window.electronAPI.saveSettings(localSettings.value)
+  const result = await window.electronAPI.saveSettings({
+    qwenApiKey: localSettings.value.qwenApiKey,
+    defaultQuality: localSettings.value.defaultQuality,
+    autoRemoveBackground: localSettings.value.autoRemoveBackground
+  })
   if (result.success) {
     emit('saved')
     emit('close')
